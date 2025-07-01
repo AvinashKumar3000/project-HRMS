@@ -20,8 +20,6 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
-    private String roll_no;
-    @Column(unique = true)
     private String email;
     private String password;
     private boolean is_approved;

@@ -1,8 +1,8 @@
 package com.example.backend_springboot.controller;
 
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +29,7 @@ public class StudentController {
     public ResponseDto validateStudent(@RequestBody AuthDto auth) {
         ResponseDto response = new ResponseDto();
         try {
-            Student existingStudent = this.studentRepository.findByEmailAndPassword(auth.getEmail(), auth.getPassword()).orElse(null);
+            Student existingStudent = this.studentRepository.findByEmail(auth.getEmail()).orElse(null);
             if (existingStudent == null) {
                 throw new Exception("Auth failed");
             }
@@ -45,14 +45,19 @@ public class StudentController {
     }
 
     @PostMapping("/apply/{staff_id}")
-    public ResponseDto applyNewStudent(@Param("staff_id") Long staff_id, @RequestBody Student newStudent) {
+    public ResponseDto applyNewStudent(@PathVariable("staff_id") Long staff_id, @RequestBody AuthDto auth) {
         ResponseDto response = new ResponseDto();
         try {
             Staff existingStaff = this.staffRepository.findById(staff_id).orElse(null);
             if (existingStaff == null) {
                 throw new Exception("Given staff not exists");
             }
+            Student newStudent = new Student();
+            newStudent.setEmail(auth.getEmail());
+            newStudent.setPassword(auth.getPassword());
             newStudent.setStaff(existingStaff);
+            newStudent.set_approved(false);
+            newStudent.set_deleted(false);
             this.studentRepository.save(newStudent);
             response.setSuccess(true);
             response.setMessage("created new student");
@@ -66,7 +71,7 @@ public class StudentController {
     }
 
     @PostMapping("/approve/{student_id}/{staff_id}")
-    public ResponseDto ApproveStudent(@Param("student_id") Long student_id, @Param("staff_id") Long staff_id) {
+    public ResponseDto ApproveStudent(@PathVariable("student_id") Long student_id, @PathVariable("staff_id") Long staff_id) {
         ResponseDto response = new ResponseDto();
         try {
             Student existingStudent = this.studentRepository.findById(student_id).orElse(null);
@@ -90,7 +95,7 @@ public class StudentController {
     }
 
     @DeleteMapping("/soft-delete/{student_id}/{staff_id}")
-    public ResponseDto deleteStudent(@Param("student_id") Long student_id, @Param("staff_id") Long staff_id) {
+    public ResponseDto deleteStudent(@PathVariable("student_id") Long student_id, @PathVariable("staff_id") Long staff_id) {
         ResponseDto response = new ResponseDto();
         try {
             Student existingStudent = this.studentRepository.findById(student_id).orElse(null);

@@ -10,4 +10,5 @@ import com.example.backend_springboot.model.Staff;
 @Repository
 public interface StaffRepository extends JpaRepository<Staff, Long> {
     Optional<Staff> findByEmailAndPassword(String email, String password);
+    Optional<Staff> findByEmail(String email);
 }

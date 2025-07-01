@@ -3,10 +3,9 @@ package com.example.backend_springboot.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +32,7 @@ public class StaffController {
     public ResponseDto validateStudent(@RequestBody AuthDto auth) {
         ResponseDto response = new ResponseDto();
         try {
-            Staff existingStaff = this.staffRepository.findByEmailAndPassword(auth.getEmail(), auth.getPassword()).orElse(null);
+            Staff existingStaff = this.staffRepository.findByEmail(auth.getEmail()).orElse(null);
             if (existingStaff == null) {
                 throw new Exception("Auth failed");
             }
@@ -65,7 +64,7 @@ public class StaffController {
     }
 
     @GetMapping("/all/by/staff/{staff_id}")
-    public ResponseDto getAllStudents(@Param("staff_id") Long staff_id) {
+    public ResponseDto getAllStudents(@PathVariable("staff_id") Long staff_id) {
         ResponseDto response = new ResponseDto();
         try {
             List<Student> studentList = this.studentRepository.findAll();
